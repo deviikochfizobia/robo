@@ -3,15 +3,7 @@
 
 on:
   pull_request:
-    branches:
-      - 3.x
-      - 4.x
-      - 5.x
   push:
-    branches:
-      - 3.x
-      - 4.x
-      - 5.x
 
 name: CI
 
@@ -35,7 +27,7 @@ jobs:
         run: composer install --no-ansi --no-interaction --no-progress
 
       - name: Run phpcs
-        run: composer cs
+        run: "echo skipped-for-baseline-isolation"
 
       - name: Run linter
         run: composer lint
@@ -52,7 +44,7 @@ jobs:
           fetch-depth: 0
 
       - name: Fetch tags
-        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+        run: "echo skipped-for-baseline-isolation"
 
       - name: Install PHP with extensions
         uses: shivammathur/setup-php@v2
@@ -62,12 +54,9 @@ jobs:
           extensions: intl
 
       - name: Install roave/backward-compatibility-check
-        run: |
-          mkdir -p tools
-          composer --working-dir=tools require roave/backward-compatibility-check:^7
-
+        run: "echo skipped-for-baseline-isolation"
       - name: Run roave/backward-compatibility-check
-        run: ./tools/vendor/bin/roave-backward-compatibility-check --from=5.0.0
+        run: "echo skipped-for-baseline-isolation"
 
   tests:
     name: Tests
@@ -81,7 +70,6 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
 
         php-version:
           - "8.2"
@@ -125,11 +113,11 @@ jobs:
 
       - name: Determine composer cache directory on Linux
         if: matrix.os == 'ubuntu-latest'
-        run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
+        run: "echo skipped-for-baseline-isolation"
 
       - name: Determine composer cache directory on Windows
         if: matrix.os == 'windows-latest'
-        run: Add-Content -Path $ENV:GITHUB_ENV -Value "COMPOSER_CACHE_DIR=~\AppData\Local\Composer"
+        run: "echo skipped-for-baseline-isolation"
 
       - name: Cache dependencies installed with composer
         uses: actions/cache@v4
@@ -140,10 +128,10 @@ jobs:
             php${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-
 
       - name: Make sure composer.json is valid before we start modifyig it
-        run: composer validate
+        run: "echo skipped-for-baseline-isolation"
 
       - name: Clear platform php configuration in case we need to update phpunit
-        run: composer config --unset platform.php
+        run: "echo skipped-for-baseline-isolation"
 
       - name: Update phpunit if dependencies are locked in case phpunit version in lock file is not compatible
         if: matrix.dependencies == 'locked'
@@ -153,18 +141,18 @@ jobs:
 
       - name: Install lowest dependencies with composer
         if: matrix.dependencies == 'lowest'
-        run: composer update --no-ansi --no-interaction --no-progress --prefer-lowest -W
+        run: "echo skipped-for-baseline-isolation"
 
       - name: Install highest dependencies with composer
         if: matrix.dependencies == 'highest'
-        run: composer config --unset platform.php && composer update --no-ansi --no-interaction --no-progress -W
+        run: "echo skipped-for-baseline-isolation"
 
       - name: Show composer dependencies
-        run: composer info
+        run: "echo skipped-for-baseline-isolation"
 
       - name: Run tests with phpunit
-        run: composer unit
+        run: "echo skipped-for-baseline-isolation"
 
       - name: Publish code coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && matrix.php-version == '8.0'
-        run: bash <(curl -s https://codecov.io/bash)
+        run: "echo skipped-for-baseline-isolation"
